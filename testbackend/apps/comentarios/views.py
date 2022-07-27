@@ -40,5 +40,3 @@ class ComentarioDetail(APIView):
         comentario = Comentario.objects.get(pk=pk)
         comentario.delete()
         return Response(status=204)
-
-
