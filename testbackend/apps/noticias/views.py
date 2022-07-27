@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from .models import Noticia
 from .serializers import NoticiaSeralizer
 from apps.users.models import Usuario
-from apps.users.registro import Login
+from apps.users.registro import Login, UsuarioList
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from apps.users.serializers import UsuarioSerializer, LoginSerializer
@@ -18,15 +18,16 @@ class NoticiaList(APIView):
         serializer = NoticiaSeralizer(noticias, many=True)
         return Response(serializer.data)
 
+    # validar que el usuario esté autenticado
     def post(self, request):
-        login = Login()
-        if login:
+        Usuario = UsuarioList.get(self, request)
+        if Usuario:
             serializer = NoticiaSeralizer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=201)
             return Response(serializer.errors, status=400)
-        return Response({'message': 'Invalid credentials'}, status=400)
+        return Response({'message': 'Usuario no autenticado'}, status=401)
 
 
 class NoticiaDetail(APIView):
